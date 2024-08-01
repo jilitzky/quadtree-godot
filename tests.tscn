@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://bydv137e6qy5x"]
+
+[ext_resource type="Script" path="res://tests.gd" id="1_6ce77"]
+[ext_resource type="PackedScene" uid="uid://bay0jvqw73pwh" path="res://quadtree.tscn" id="2_j44gl"]
+[ext_resource type="PackedScene" uid="uid://b56e3ue53kaqy" path="res://element.tscn" id="3_8ar3l"]
+
+[node name="Tests" type="Node2D"]
+script = ExtResource("1_6ce77")
+
+[node name="Quadtree" parent="." instance=ExtResource("2_j44gl")]
+area = Rect2(0, 0, 500, 500)
+smallest_region = Vector2(1, 1)
+
+[node name="Depth1H" type="Line2D" parent="."]
+points = PackedVector2Array(0, 250, 500, 250)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Depth1V" type="Line2D" parent="."]
+points = PackedVector2Array(250, 0, 250, 500)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Depth2H" type="Line2D" parent="."]
+points = PackedVector2Array(250, 125, 500, 125)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Depth2V" type="Line2D" parent="."]
+points = PackedVector2Array(375, 0, 375, 250)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Depth3H" type="Line2D" parent="."]
+points = PackedVector2Array(250, 187.5, 375, 187.5)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Depth3V" type="Line2D" parent="."]
+points = PackedVector2Array(312.5, 125, 312.5, 250)
+width = 1.0
+metadata/_edit_lock_ = true
+
+[node name="Element1" parent="." instance=ExtResource("3_8ar3l")]
+position = Vector2(125, 375)
+metadata/_edit_lock_ = true
+
+[node name="Element2" parent="." instance=ExtResource("3_8ar3l")]
+position = Vector2(438, 63)
+metadata/_edit_lock_ = true
+
+[node name="Element3" parent="." instance=ExtResource("3_8ar3l")]
+position = Vector2(281, 156)
+metadata/_edit_lock_ = true
+
+[node name="Element4" parent="." instance=ExtResource("3_8ar3l")]
+position = Vector2(344, 219)
+metadata/_edit_lock_ = true
