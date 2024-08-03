@@ -40,11 +40,12 @@ func find_nearest(position, nearest):
 		return
 		
 	# If the region has elements, consider them as candidates
+	var nearest_distance_sq = nearest_distance * nearest_distance
 	for element in _entries:
-		var distance = position.distance_to(_entries[element])
-		if (distance < nearest_distance):
+		var distance_sq = position.distance_squared_to(_entries[element])
+		if (distance_sq < nearest_distance_sq):
 			nearest[0] = element
-			nearest[1] = distance
+			nearest[1] = sqrt(distance_sq)
 			
 	# If the region has children, explore them sorted by their proximity to the query position
 	if get_child_count() > 0:

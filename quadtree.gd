@@ -9,7 +9,7 @@ extends Node
 var _root: Region
 var _entries: Dictionary
 
-## Add an element at a given position
+## Adds an element at a given position
 func add(element, position):
 	if _entries.has(element) or not area.has_point(position):
 		return false
@@ -18,7 +18,7 @@ func add(element, position):
 	_entries[element] = position
 	return true
 
-## Remove all elements from the tree
+## Removes all elements from the tree
 func clear():
 	_root = Region.new(area)
 	_entries = {}
@@ -31,7 +31,7 @@ func get_depth():
 func get_size():
 	return _entries.size()
 
-## Find the nearest element at the given position
+## Finds the nearest element to a given position
 func find_nearest(position):
 	if not area.has_point(position):
 		return null
@@ -42,7 +42,7 @@ func find_nearest(position):
 	_root.find_nearest(position, nearest)
 	return nearest[0];
 	
-## Remove an element from the tree
+## Removes an element from the tree
 func remove(element):
 	if not _entries.has(element):
 		return false
