@@ -1,9 +1,9 @@
 # quadtree-godot
 A GDScript implementation of a quadtree for the Godot Game Engine.
-## Exported Variables
+## Exported Properties
 - **area:** The surface covered by the quadtree
 - **smallest_region:** The smallest subdivision the quadtree can have
-## Interface
+## Methods
 - **add:** Adds an element at a given position
 - **clear:** Removes all elements from the tree
 - **get_depth:** Returns the maximum depth of the tree
