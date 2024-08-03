@@ -31,7 +31,7 @@ func get_depth():
 func get_size():
 	return _entries.size()
 
-## Finds the nearest element to a given position
+## Returns the nearest element to a given position
 func find_nearest(position):
 	if not area.has_point(position):
 		return null
