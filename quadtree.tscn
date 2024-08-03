@@ -1,8 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bay0jvqw73pwh"]
+[gd_scene load_steps=2 format=3 uid="uid://dwuyjnkh8idd0"]
 
 [ext_resource type="Script" path="res://quadtree.gd" id="1_1akwf"]
 
 [node name="Quadtree" type="Node"]
 script = ExtResource("1_1akwf")
-area = null
-smallest_region = null
