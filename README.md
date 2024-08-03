@@ -8,5 +8,5 @@ A GDScript implementation of a quadtree for the Godot Game Engine.
 - **clear:** Removes all elements from the tree
 - **get_depth:** Returns the maximum depth of the tree
 - **get_size:** Returns the number of elements in the tree
-- **find_nearest:** Finds the nearest element to a given position
+- **find_nearest:** Returns the nearest element to a given position
 - **remove:** Removes an element from the tree
