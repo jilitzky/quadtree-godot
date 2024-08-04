@@ -16,7 +16,7 @@ func add(element, position, smallest_region):
 			return
 			
 		# If the region can't subdivide further, force add the element at this level		
-		if (_area.size / 2 < smallest_region):
+		if _area.size / 2 < smallest_region:
 			_entries[element] = position
 			return
 		
@@ -36,14 +36,14 @@ func find_nearest(position, nearest):
 	var min = _area.position
 	var max = _area.position + _area.size
 	var nearest_distance = nearest[1]
-	if (position.x < min.x - nearest_distance or position.x > max.x + nearest_distance or position.y < min.y - nearest_distance or position.y > max.y + nearest_distance):
+	if position.x < min.x - nearest_distance or position.x > max.x + nearest_distance or position.y < min.y - nearest_distance or position.y > max.y + nearest_distance:
 		return
 		
 	# If the region has elements, consider them as candidates
 	var nearest_distance_sq = nearest_distance * nearest_distance
 	for element in _entries:
 		var distance_sq = position.distance_squared_to(_entries[element])
-		if (distance_sq < nearest_distance_sq):
+		if distance_sq < nearest_distance_sq:
 			nearest[0] = element
 			nearest[1] = sqrt(distance_sq)
 			
@@ -80,15 +80,15 @@ func get_child_index(position):
 	# 3 = Bottom-Right
 	var index = 0
 	var center = _area.get_center()
-	if (position.x >= center.x):
+	if position.x >= center.x:
 		index += 1
-	if (position.y >= center.y):
+	if position.y >= center.y:
 		index += 2
 	return index
 	
 func get_or_create_child(position):
 	var index = get_child_index(position)
-	if (_children[index] == null):
+	if _children[index] == null:
 		var childArea = _area
 		childArea.size /= 2
 		
@@ -115,7 +115,7 @@ func refresh_depth():
 	
 func remove(element, position):
 	# Attempt to remove the element at this level
-	if (_entries.erase(element)):
+	if _entries.erase(element):
 		return
 		
 	# Remove the element from the child matching the position
@@ -129,13 +129,14 @@ func remove(element, position):
 		_children[index] = null
 	
 	# Attempt to merge the last remaining child with the parent
-	if (get_child_count() == 1):
+	if get_child_count() == 1:
 		for i in _children.size():
 			var remaining_child = _children[i]
-			if (remaining_child != null):
-				assert(_entries.is_empty())
-				_entries.merge(remaining_child._entries)
-				_children[i] = null
+			if remaining_child != null:
+				if remaining_child.get_child_count() == 0:
+					assert(_entries.is_empty())
+					_entries.merge(remaining_child._entries)
+					_children[i] = null
 				break
 	
 	refresh_depth()
