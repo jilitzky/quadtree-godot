@@ -20,7 +20,7 @@ func add(element, position):
 
 ## Removes all elements from the tree
 func clear():
-	_root = Region.new(area)
+	_root = Region.new(area.position, area.position + area.size)
 	_entries = {}
 
 ## Returns the maximum depth of the tree
@@ -32,12 +32,10 @@ func get_size():
 	return _entries.size()
 
 ## Returns the nearest element to a given position
-func find_nearest(position):
+func find_nearest(position, max_distance):
 	if not area.has_point(position):
 		return null
 	
-	var area = _root._area
-	var max_distance = area.size.x + area.size.y
 	var nearest = [null, max_distance]
 	_root.find_nearest(position, nearest)
 	return nearest[0];

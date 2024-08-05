@@ -1,13 +1,17 @@
 class_name Region
 extends RefCounted
 
-var _area: Rect2
+var _min: Vector2
+var _max: Vector2
+var _center: Vector2
+var _extents : Vector2
 var _depth = 1
 var _entries = {}
 var _children = [null, null, null, null]
+var _child_count = 0
 
 func add(element, position, smallest_region):
-	if get_child_count() == 0:
+	if _child_count == 0:
 		assert(not _entries.has(element))
 		
 		# Set the first element in this level or absorb identical positions
@@ -16,7 +20,7 @@ func add(element, position, smallest_region):
 			return
 			
 		# If the region can't subdivide further, force add the element at this level		
-		if _area.size / 2 < smallest_region:
+		if _extents / 2 < smallest_region:
 			_entries[element] = position
 			return
 		
@@ -33,10 +37,8 @@ func add(element, position, smallest_region):
 
 func find_nearest(position, nearest):
 	# Do an early out if the position is farther away than the given distance on each axis
-	var min = _area.position
-	var max = _area.position + _area.size
 	var nearest_distance = nearest[1]
-	if position.x < min.x - nearest_distance or position.x > max.x + nearest_distance or position.y < min.y - nearest_distance or position.y > max.y + nearest_distance:
+	if position.x < _min.x - nearest_distance or position.x > _max.x + nearest_distance or position.y < _min.y - nearest_distance or position.y > _max.y + nearest_distance:
 		return
 		
 	# If the region has elements, consider them as candidates
@@ -48,10 +50,9 @@ func find_nearest(position, nearest):
 			nearest[1] = sqrt(distance_sq)
 			
 	# If the region has children, explore them sorted by their proximity to the query position
-	if get_child_count() > 0:
-		var center = _area.get_center()
-		var is_right = int(position.x >= center.x)
-		var is_bottom = int(position.y >= center.y)
+	if _child_count > 0:
+		var is_right = int(position.x >= _center.x)
+		var is_bottom = int(position.y >= _center.y)
 		
 		var sorted_indices: Array
 		sorted_indices.resize(4)
@@ -64,13 +65,6 @@ func find_nearest(position, nearest):
 			var child = _children[i]
 			if child != null:
 				child.find_nearest(position, nearest)
-
-func get_child_count():
-	var count = 0
-	for child in _children:
-		if child != null:
-			count += 1
-	return count
 	
 func get_child_index(position):
 	# Child indices follow a Z-order curve
@@ -79,32 +73,39 @@ func get_child_index(position):
 	# 2 = Bottom-Left
 	# 3 = Bottom-Right
 	var index = 0
-	var center = _area.get_center()
-	if position.x >= center.x:
+	if position.x >= _center.x:
 		index += 1
-	if position.y >= center.y:
+	if position.y >= _center.y:
 		index += 2
 	return index
 	
 func get_or_create_child(position):
 	var index = get_child_index(position)
 	if _children[index] == null:
-		var childArea = _area
-		childArea.size /= 2
+		var child_min = _min
+		var child_max = _max
 		
-		# Adjust the child's position relative to the region's center
-		var center = _area.get_center()
-		if position.x >= center.x:
-			childArea.position.x += childArea.size.x
-		if position.y >= center.y:
-			childArea.position.y += childArea.size.y
+		# Adjust child's position horizontally
+		var half_width = _extents.x / 2
+		if position.x < _center.x:
+			child_max.x -= half_width
+		else:
+			child_min.x += half_width
 		
-		_children[index] = Region.new(childArea)
+		# Adjust child's position vertically
+		var half_height = _extents.y / 2
+		if position.y < _center.y:
+			child_max.y -= half_height
+		else:
+			child_min.y += half_height
+		
+		_children[index] = Region.new(child_min, child_max)
+		_child_count += 1
 		
 	return _children[index]
 	
 func is_empty():
-	return _entries.is_empty() and get_child_count() == 0
+	return _entries.is_empty() and _child_count == 0
 	
 func refresh_depth():
 	var max_child_depth = 0
@@ -127,19 +128,34 @@ func remove(element, position):
 	# Invalidate a child if it's completely empty after a removal
 	if child.is_empty():
 		_children[index] = null
+		_child_count -= 1
 	
 	# Attempt to merge the last remaining child with the parent
-	if get_child_count() == 1:
+	if _child_count == 1:
 		for i in _children.size():
 			var remaining_child = _children[i]
 			if remaining_child != null:
-				if remaining_child.get_child_count() == 0:
+				if remaining_child._child_count == 0:
 					assert(_entries.is_empty())
 					_entries.merge(remaining_child._entries)
 					_children[i] = null
+					_child_count -= 1
 				break
 	
 	refresh_depth()
 	
-func _init(area):
-	_area = area
+func reset():
+	_min = Vector2.ZERO
+	_max = Vector2.ZERO
+	_center = Vector2.ZERO
+	_extents = Vector2.ZERO
+	_depth = 1
+	_entries.clear()
+	_children.fill(null)
+	_child_count = 0
+
+func _init(min, max):
+	_min = min
+	_max = max
+	_center = (min + max) / 2
+	_extents = max - min

@@ -1,5 +1,7 @@
 extends Node2D
 
+const MAX_DISTANCE = 1000
+
 func _ready():
 	add()
 	add_cannot_subdivide()
@@ -130,7 +132,7 @@ func find_nearest():
 	
 	$Quadtree.add($Element1, $Element1.position)
 	$Quadtree.add($Element2, $Element2.position)
-	$Quadtree.add($Element3, $Element3.position) #<-
+	$Quadtree.add($Element3, $Element3.position)
 	$Quadtree.add($Element4, $Element4.position)
 	
 	#  __________ ___________
@@ -143,13 +145,13 @@ func find_nearest():
 	# |          |           |
 	# |__________|___________|
 	
-	var nearest = $Quadtree.find_nearest(Vector2(125, 125))
+	var nearest = $Quadtree.find_nearest(Vector2(125, 125), MAX_DISTANCE)
 	assert(nearest == $Element3)
 	
 func find_nearest_empty():
 	$Quadtree.clear()
 	
-	var nearest = $Quadtree.find_nearest(Vector2(250, 250))
+	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE)
 	assert(nearest == null)
 	
 func find_nearest_out_of_bounds():
@@ -157,7 +159,7 @@ func find_nearest_out_of_bounds():
 	
 	$Quadtree.add($Element1, $Element1.position)
 	
-	var nearest = $Quadtree.find_nearest(Vector2(500, 500))
+	var nearest = $Quadtree.find_nearest(Vector2(500, 500), MAX_DISTANCE)
 	assert(nearest == null)
 	
 func find_nearest_single():
@@ -165,7 +167,7 @@ func find_nearest_single():
 	
 	$Quadtree.add($Element1, $Element1.position)
 	
-	var nearest = $Quadtree.find_nearest(Vector2(250, 250))
+	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE)
 	assert(nearest == $Element1)
 	
 func remove():
