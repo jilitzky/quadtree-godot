@@ -32,12 +32,15 @@ func get_size():
 	return _entries.size()
 
 ## Returns the nearest element to a given position
-func find_nearest(position, max_distance):
+func find_nearest(position, max_distance, filter):
 	if not area.has_point(position):
+		return null
+		
+	if _entries.is_empty():
 		return null
 	
 	var nearest = [null, max_distance]
-	_root.find_nearest(position, nearest)
+	_root.find_nearest(position, nearest, filter)
 	return nearest[0];
 	
 ## Removes an element from the tree

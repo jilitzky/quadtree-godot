@@ -38,7 +38,7 @@ func add():
 	# |                      |
 	# |                      |
 	# |                      |
-	# |    *                 |
+	# |    1                 |
 	# |                      |
 	# |______________________|
 	
@@ -48,12 +48,12 @@ func add():
 	$Quadtree.add($Element2, $Element2.position)
 	
 	#  __________ ___________
-	# |          |        *  |
+	# |          |        2  |
 	# |          |           |
 	# |          |           |
 	# |__________|___________|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -63,12 +63,12 @@ func add():
 	$Quadtree.add($Element3, $Element3.position)
 	
 	#  __________ ___________
-	# |          |     |  *  |
+	# |          |     |  2  |
 	# |          |_____|_____|
-	# |          | *   |     |
+	# |          | 3   |     |
 	# |__________|_____|_____|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -78,12 +78,12 @@ func add():
 	$Quadtree.add($Element4, $Element4.position)
 	
 	#  __________ ___________
-	# |          |     |  *  |
+	# |          |     |  2  |
 	# |          |_____|_____|
-	# |          |_*|__|     |
-	# |__________|__|*_|_____|
+	# |          |_3|__|     |
+	# |__________|__|4_|_____|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -136,22 +136,25 @@ func find_nearest():
 	$Quadtree.add($Element4, $Element4.position)
 	
 	#  __________ ___________
-	# |          |     |  *  |
-	# |    o     |_____|_____|
-	# |          |_*|__|     |
-	# |__________|__|*_|_____|
+	# |          |     |  2  |
+	# |    ?     |_____|_____|
+	# |          |_3|__|     |
+	# |__________|__|4_|_____|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
-	var nearest = $Quadtree.find_nearest(Vector2(125, 125), MAX_DISTANCE)
-	assert(nearest == $Element3)
+	var filter = func (element, distance_sq):
+		return element.name.contains("4")
+	
+	var nearest = $Quadtree.find_nearest(Vector2(125, 125), MAX_DISTANCE, filter)
+	assert(nearest == $Element4)
 	
 func find_nearest_empty():
 	$Quadtree.clear()
 	
-	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE)
+	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE, null)
 	assert(nearest == null)
 	
 func find_nearest_out_of_bounds():
@@ -159,7 +162,7 @@ func find_nearest_out_of_bounds():
 	
 	$Quadtree.add($Element1, $Element1.position)
 	
-	var nearest = $Quadtree.find_nearest(Vector2(500, 500), MAX_DISTANCE)
+	var nearest = $Quadtree.find_nearest(Vector2(500, 500), MAX_DISTANCE, null)
 	assert(nearest == null)
 	
 func find_nearest_single():
@@ -167,7 +170,7 @@ func find_nearest_single():
 	
 	$Quadtree.add($Element1, $Element1.position)
 	
-	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE)
+	var nearest = $Quadtree.find_nearest(Vector2(250, 250), MAX_DISTANCE, null)
 	assert(nearest == $Element1)
 	
 func remove():
@@ -179,12 +182,12 @@ func remove():
 	$Quadtree.add($Element4, $Element4.position)
 	
 	#  __________ ___________
-	# |          |     |  *  |
+	# |          |     |  2  |
 	# |          |_____|_____|
-	# |          |_*|__|     |
-	# |__________|__|*_|_____|
+	# |          |_3|__|     |
+	# |__________|__|4_|_____|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -195,12 +198,12 @@ func remove():
 	assert(removed)
 	
 	#  __________ ___________
-	# |          |     |  *  |
+	# |          |     |  2  |
 	# |          |_____|_____|
-	# |          | *   |     |
+	# |          | 3   |     |
 	# |__________|_____|_____|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -211,12 +214,12 @@ func remove():
 	assert(removed)
 	
 	#  __________ ___________
-	# |          |        *  |
+	# |          |        2  |
 	# |          |           |
 	# |          |           |
 	# |__________|___________|
 	# |          |           |
-	# |    *     |           |
+	# |    1     |           |
 	# |          |           |
 	# |__________|___________|
 	
@@ -232,7 +235,7 @@ func remove():
 	# |                      |
 	# |                      |
 	# |                      |
-	# |    *                 |
+	# |    1                 |
 	# |                      |
 	# |______________________|
 	

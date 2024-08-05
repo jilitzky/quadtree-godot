@@ -9,6 +9,7 @@ var _depth = 1
 var _entries = {}
 var _children = [null, null, null, null]
 var _child_count = 0
+var _nearest_indices = [-1, -1, -1, -1]
 
 func add(element, position, smallest_region):
 	if _child_count == 0:
@@ -35,7 +36,7 @@ func add(element, position, smallest_region):
 	var added = child.add(element, position, smallest_region)
 	refresh_depth()
 
-func find_nearest(position, nearest):
+func find_nearest(position, nearest, filter):
 	# Do an early out if the position is farther away than the given distance on each axis
 	var nearest_distance = nearest[1]
 	if position.x < _min.x - nearest_distance or position.x > _max.x + nearest_distance or position.y < _min.y - nearest_distance or position.y > _max.y + nearest_distance:
@@ -45,7 +46,7 @@ func find_nearest(position, nearest):
 	var nearest_distance_sq = nearest_distance * nearest_distance
 	for element in _entries:
 		var distance_sq = position.distance_squared_to(_entries[element])
-		if distance_sq < nearest_distance_sq:
+		if distance_sq < nearest_distance_sq and (filter == null or filter.call(element, distance_sq)):
 			nearest[0] = element
 			nearest[1] = sqrt(distance_sq)
 			
@@ -54,17 +55,15 @@ func find_nearest(position, nearest):
 		var is_right = int(position.x >= _center.x)
 		var is_bottom = int(position.y >= _center.y)
 		
-		var sorted_indices: Array
-		sorted_indices.resize(4)
-		sorted_indices[0] = is_bottom * 2 + is_right
-		sorted_indices[1] = is_bottom * 2 + (1 - is_right)
-		sorted_indices[2] = (1 - is_bottom) * 2 + is_right
-		sorted_indices[3] = (1 - is_bottom) * 2 + (1 - is_right)
+		_nearest_indices[0] = is_bottom * 2 + is_right
+		_nearest_indices[1] = is_bottom * 2 + (1 - is_right)
+		_nearest_indices[2] = (1 - is_bottom) * 2 + is_right
+		_nearest_indices[3] = (1 - is_bottom) * 2 + (1 - is_right)
 		
-		for i in sorted_indices:
+		for i in _nearest_indices:
 			var child = _children[i]
 			if child != null:
-				child.find_nearest(position, nearest)
+				child.find_nearest(position, nearest, filter)
 	
 func get_child_index(position):
 	# Child indices follow a Z-order curve
@@ -143,16 +142,6 @@ func remove(element, position):
 				break
 	
 	refresh_depth()
-	
-func reset():
-	_min = Vector2.ZERO
-	_max = Vector2.ZERO
-	_center = Vector2.ZERO
-	_extents = Vector2.ZERO
-	_depth = 1
-	_entries.clear()
-	_children.fill(null)
-	_child_count = 0
 
 func _init(min, max):
 	_min = min
